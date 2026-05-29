@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { usePosts } from '../../hooks/usePosts'
+import { usePageMeta } from '../../hooks/usePageMeta'
 import { PageLayout } from '../../components/layout/PageLayout'
 
 function formatDate(iso: string) {
@@ -10,6 +11,7 @@ function formatDate(iso: string) {
 }
 
 export function NewsPage() {
+  usePageMeta('News', 'Berichte, Gedanken und Neuigkeiten rund ums Bergsteigen')
   const [page, setPage] = useState(0)
   const { data, isLoading, isError } = usePosts(page)
 

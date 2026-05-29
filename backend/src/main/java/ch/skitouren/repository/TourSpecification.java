@@ -26,11 +26,9 @@ public final class TourSpecification {
     }
 
     public static Specification<Tour> matchesSearch(String q) {
-        String pattern = "%" + q.toLowerCase() + "%";
-        return (root, query, cb) -> cb.or(
-                cb.like(cb.lower(root.get("title")),       pattern),
-                cb.like(cb.lower(root.get("summary")),     pattern),
-                cb.like(cb.lower(root.get("description")), pattern)
-        );
+        return (root, query, cb) ->
+                cb.isTrue(cb.function("tsmatches", Boolean.class,
+                        root.get("searchVector"),
+                        cb.literal(q)));
     }
 }

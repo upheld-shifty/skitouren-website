@@ -1,5 +1,6 @@
 import { Link, useParams, Navigate } from 'react-router-dom'
 import { usePost } from '../../hooks/usePosts'
+import { usePageMeta } from '../../hooks/usePageMeta'
 import { PageLayout } from '../../components/layout/PageLayout'
 
 function formatDate(iso: string) {
@@ -23,6 +24,8 @@ function PostContent({ text }: { text: string }) {
 export function PostDetailPage() {
   const { slug } = useParams<{ slug: string }>()
   const { data: post, isLoading, isError } = usePost(slug ?? '')
+
+  usePageMeta(post?.title, post?.summary ?? undefined)
 
   if (isLoading) {
     return (

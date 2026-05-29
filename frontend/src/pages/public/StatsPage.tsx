@@ -1,4 +1,5 @@
 import { useStats } from '../../hooks/useTours'
+import { usePageMeta } from '../../hooks/usePageMeta'
 import { PageLayout } from '../../components/layout/PageLayout'
 import { TOUR_TYPE_LABELS } from '../../types'
 import type { TourType } from '../../types'
@@ -32,6 +33,7 @@ function fmt(n: number, decimals = 0) {
 }
 
 export function StatsPage() {
+  usePageMeta('Statistiken', 'Alle publizierten Touren im Überblick — Kilometer, Höhenmeter und mehr')
   const { data, isLoading, isError } = useStats()
 
   return (

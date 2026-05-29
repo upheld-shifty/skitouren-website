@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import type { Difficulty, TourType } from '../../types'
 import { useTours } from '../../hooks/useTours'
+import { usePageMeta } from '../../hooks/usePageMeta'
 import { TourCard } from '../../components/tour/TourCard'
 import { TourRow } from '../../components/tour/TourRow'
 import { TourFilter } from '../../components/tour/TourFilter'
 import { PageLayout } from '../../components/layout/PageLayout'
+import { TourCardSkeleton, TourRowSkeleton } from '../../components/skeletons/TourCardSkeleton'
 
 type ViewMode = 'grid' | 'list'
 
@@ -44,6 +46,8 @@ function ListIcon() {
 }
 
 export function HomePage() {
+  usePageMeta(undefined, 'Schweizer Tourenberichte — Wanderungen, Skitouren, Klettersteige und Hochtouren')
+
   const [filters, setFilters] = useState<FilterState>({
     type: '', difficulty: '', region: '', q: '',
   })
@@ -109,10 +113,23 @@ export function HomePage() {
           </div>
         )}
 
-        {isLoading && (
-          <div className="loading-center" aria-live="polite" aria-label="Touren werden geladen">
-            <span className="spinner" />
-          </div>
+        {isLoading && view === 'grid' && (
+          <ul className="tour-grid" role="list" aria-label="Touren werden geladen" aria-busy="true">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <li key={i}><TourCardSkeleton /></li>
+            ))}
+          </ul>
+        )}
+
+        {isLoading && view === 'list' && (
+          <ul className="tour-list" role="list" aria-label="Touren werden geladen" aria-busy="true"
+              style={{ border: '1px solid var(--color-border)', borderRadius: 'var(--radius-lg)', overflow: 'hidden' }}>
+            {Array.from({ length: 8 }).map((_, i) => (
+              <li key={i} style={i > 0 ? { borderTop: '1px solid var(--color-border)' } : {}}>
+                <TourRowSkeleton />
+              </li>
+            ))}
+          </ul>
         )}
 
         {isError && (

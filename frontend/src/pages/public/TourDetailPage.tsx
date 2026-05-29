@@ -1,9 +1,16 @@
+import { lazy, Suspense } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useTourDetail } from '../../hooks/useTourDetail'
+import { useGpxData } from '../../hooks/useGpxData'
+import { usePageMeta } from '../../hooks/usePageMeta'
 import { PageLayout } from '../../components/layout/PageLayout'
 import { DifficultyBadge } from '../../components/tour/DifficultyBadge'
 import { PhotoGallery } from '../../components/tour/PhotoGallery'
+import { TourDetailSkeleton } from '../../components/skeletons/TourDetailSkeleton'
 import { TOUR_TYPE_LABELS, difficultyLabel } from '../../types'
+
+const GpxMap        = lazy(() => import('../../components/tour/GpxMap').then(m => ({ default: m.GpxMap })))
+const ElevationProfile = lazy(() => import('../../components/tour/ElevationProfile').then(m => ({ default: m.ElevationProfile })))
 
 function formatDuration(min: number): string {
   const h = Math.floor(min / 60)
@@ -12,14 +19,53 @@ function formatDuration(min: number): string {
   return m > 0 ? `${h} h ${m} min` : `${h} h`
 }
 
+function GpxSection({ gpxUrl }: { gpxUrl: string }) {
+  const { data, isLoading } = useGpxData(gpxUrl)
+
+  if (isLoading) return <div className="loading-center" style={{ height: 400 }}><span className="spinner" /></div>
+  if (!data || data.coordinates.length === 0) return null
+
+  return (
+    <>
+      <section style={{ marginBottom: 'var(--space-6)' }}>
+        <h2 style={{ marginBottom: 'var(--space-4)' }}>Karte</h2>
+        <Suspense fallback={<div className="loading-center" style={{ height: 400 }}><span className="spinner" /></div>}>
+          <GpxMap gpxData={data} />
+        </Suspense>
+      </section>
+
+      {data.elevation.length > 1 && (
+        <section style={{ marginBottom: 'var(--space-10)' }}>
+          <h2 style={{ marginBottom: 'var(--space-4)' }}>Höhenprofil</h2>
+          <div style={{
+            background: 'var(--color-surface)',
+            border: '1px solid var(--color-border)',
+            borderRadius: 'var(--radius-lg)',
+            padding: 'var(--space-4)',
+          }}>
+            <Suspense fallback={<div className="loading-center"><span className="spinner" /></div>}>
+              <ElevationProfile points={data.elevation} />
+            </Suspense>
+          </div>
+        </section>
+      )}
+    </>
+  )
+}
+
 export function TourDetailPage() {
   const { slug } = useParams<{ slug: string }>()
   const { data: tour, isLoading, isError } = useTourDetail(slug ?? '')
 
+  usePageMeta(
+    tour?.title,
+    tour?.summary ?? undefined,
+  )
+
   if (isLoading) {
     return (
       <PageLayout>
-        <div className="loading-center"><span className="spinner" /></div>
+        <TourDetailSkeleton />
       </PageLayout>
     )
   }
@@ -148,7 +194,7 @@ export function TourDetailPage() {
             )}
           </dl>
 
-          {/* GPX download */}
+          {/* GPX download button */}
           {tour.gpxFile && (
             <div style={{ marginBottom: 'var(--space-6)' }}>
               <a href={tour.gpxFile.downloadUrl} download className="btn btn--secondary">
@@ -186,6 +232,9 @@ export function TourDetailPage() {
               </div>
             </section>
           )}
+
+          {/* GPX map + elevation profile */}
+          {tour.gpxFile && <GpxSection gpxUrl={tour.gpxFile.downloadUrl} />}
 
           {/* Photo gallery */}
           {tour.photos.length > 1 && (
