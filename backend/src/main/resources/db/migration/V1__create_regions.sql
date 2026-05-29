@@ -1,0 +1,5 @@
+CREATE TABLE regions (
+    id      BIGSERIAL    PRIMARY KEY,
+    name    VARCHAR(100) NOT NULL UNIQUE,
+    country VARCHAR(10)  NOT NULL DEFAULT 'CH'
+);

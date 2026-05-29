@@ -1,0 +1,37 @@
+services:
+  postgres:
+    ports:
+      - "5432:5432"
+
+  backend:
+    build:
+      context: ./backend
+      target: dev
+    volumes:
+      - ./backend/src:/app/src
+      - maven_cache:/root/.m2
+      - storage_data:/app/storage
+    ports:
+      - "8080:8080"
+    healthcheck:
+      disable: true
+    command: ["mvn", "spring-boot:run"]
+
+  frontend:
+    build:
+      context: ./frontend
+      target: dev
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/index.html:/app/index.html
+      - node_modules:/app/node_modules
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    healthcheck:
+      disable: true
+
+volumes:
+  maven_cache:
+  node_modules:

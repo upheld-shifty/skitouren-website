@@ -1,0 +1,147 @@
+import { type FormEvent, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext'
+import { ApiError } from '../../api/client'
+
+export function RegisterPage() {
+  const { register }  = useAuth()
+  const navigate      = useNavigate()
+  const [username,    setUsername]    = useState('')
+  const [password,    setPassword]    = useState('')
+  const [passwordTwo, setPasswordTwo] = useState('')
+  const [loading,     setLoading]     = useState(false)
+  const [error,       setError]       = useState<string | null>(null)
+
+  const passwordMismatch = passwordTwo.length > 0 && password !== passwordTwo
+
+  async function handleSubmit(e: FormEvent) {
+    e.preventDefault()
+    if (password !== passwordTwo) {
+      setError('Die Passwörter stimmen nicht überein.')
+      return
+    }
+    setLoading(true)
+    setError(null)
+    try {
+      await register(username, password)
+      navigate('/')
+    } catch (err) {
+      if (err instanceof ApiError) {
+        if (err.status === 409) setError('Dieser Benutzername ist bereits vergeben.')
+        else if (err.status === 400) setError('Ungültige Eingabe. Benutzername: 3–30 Zeichen, Passwort: min. 8 Zeichen.')
+        else setError('Registrierung fehlgeschlagen. Bitte erneut versuchen.')
+      } else {
+        setError('Registrierung fehlgeschlagen.')
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      background: 'var(--color-bg)',
+      padding: 'var(--space-6)',
+    }}>
+      <div style={{
+        width: '100%',
+        maxWidth: '400px',
+        background: 'var(--color-surface)',
+        border: '1px solid var(--color-border)',
+        borderRadius: 'var(--radius-lg)',
+        padding: 'var(--space-8)',
+        boxShadow: 'var(--shadow-md)',
+      }}>
+        <div style={{ textAlign: 'center', marginBottom: 'var(--space-8)' }}>
+          <svg width="40" height="40" viewBox="0 0 32 32" aria-hidden="true"
+               style={{ margin: '0 auto var(--space-4)', display: 'block' }}>
+            <polygon points="16,2 30,28 2,28" fill="var(--color-brand)" />
+          </svg>
+          <h1 style={{ fontSize: 'var(--font-size-2xl)' }}>Konto erstellen</h1>
+        </div>
+
+        {error && (
+          <div className="notice notice--error" role="alert" style={{ marginBottom: 'var(--space-4)' }}>
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+          <div className="form-group">
+            <label htmlFor="reg-username" className="form-label">Benutzername</label>
+            <input
+              id="reg-username"
+              type="text"
+              className="form-input"
+              autoComplete="username"
+              required
+              minLength={3}
+              maxLength={30}
+              pattern="^[a-zA-Z0-9_-]+"
+              title="Nur Buchstaben, Ziffern, - und _"
+              value={username}
+              onChange={e => setUsername(e.target.value)}
+            />
+            <span className="form-hint">3–30 Zeichen · Buchstaben, Ziffern, - und _</span>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="reg-password" className="form-label">Passwort</label>
+            <input
+              id="reg-password"
+              type="password"
+              className="form-input"
+              autoComplete="new-password"
+              required
+              minLength={8}
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+            />
+            <span className="form-hint">Mindestens 8 Zeichen</span>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="reg-password2" className="form-label">Passwort bestätigen</label>
+            <input
+              id="reg-password2"
+              type="password"
+              className={`form-input${passwordMismatch ? ' form-input--error' : ''}`}
+              autoComplete="new-password"
+              required
+              value={passwordTwo}
+              onChange={e => setPasswordTwo(e.target.value)}
+            />
+            {passwordMismatch && (
+              <span className="form-error">Passwörter stimmen nicht überein.</span>
+            )}
+          </div>
+
+          <button
+            type="submit"
+            className="btn btn--primary btn--lg"
+            disabled={loading || passwordMismatch}
+            style={{ marginTop: 'var(--space-2)' }}
+          >
+            {loading ? 'Konto wird erstellt…' : 'Konto erstellen'}
+          </button>
+        </form>
+
+        <p style={{
+          marginTop: 'var(--space-6)',
+          textAlign: 'center',
+          fontSize: 'var(--font-size-sm)',
+          color: 'var(--color-text-secondary)',
+        }}>
+          Bereits ein Konto?{' '}
+          <Link to="/anmelden" style={{ color: 'var(--color-brand)', fontWeight: 500 }}>
+            Anmelden →
+          </Link>
+        </p>
+      </div>
+    </div>
+  )
+}

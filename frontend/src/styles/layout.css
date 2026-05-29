@@ -1,0 +1,221 @@
+/* Site wrapper */
+.site-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.site-main {
+  flex: 1;
+}
+
+/* Centred content container */
+.container {
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  padding-left: var(--content-padding);
+  padding-right: var(--content-padding);
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────── */
+.site-header {
+  background-color: var(--color-brand);
+  color: #fff;
+  padding: var(--space-4) 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--shadow-sm);
+}
+
+.site-header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-6);
+}
+
+.site-header__logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: #fff;
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-decoration: none;
+}
+
+.site-header__logo svg {
+  width: 28px;
+  height: 28px;
+  fill: #fff;
+  opacity: 0.9;
+}
+
+.site-header__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+}
+
+.site-header__nav a {
+  color: rgba(255,255,255,0.85);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  text-decoration: none;
+  transition: color var(--transition);
+}
+.site-header__nav a:hover {
+  color: #fff;
+  text-decoration: none;
+}
+
+/* "Anmelden" pill button */
+.site-header__login {
+  padding: var(--space-1) var(--space-3) !important;
+  border: 1px solid rgba(255,255,255,0.45);
+  border-radius: var(--radius-md);
+}
+.site-header__login:hover {
+  background-color: rgba(255,255,255,0.12);
+}
+
+/* Logged-in username display */
+.site-header__user {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: var(--font-size-sm);
+  color: rgba(255,255,255,0.75);
+}
+
+/* Logout — styled like a nav link */
+.site-header__logout {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.75);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0;
+  transition: color var(--transition);
+}
+.site-header__logout:hover { color: #fff; }
+
+/* ── Footer ─────────────────────────────────────────────────────────────── */
+.site-footer {
+  border-top: 1px solid var(--color-border);
+  padding: var(--space-8) 0;
+  margin-top: var(--space-16);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.site-footer__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+/* ── Page sections ───────────────────────────────────────────────────────── */
+.page-hero {
+  padding: var(--space-12) 0 var(--space-8);
+}
+
+.page-hero__title {
+  font-size: var(--font-size-4xl);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-3);
+}
+
+.page-hero__subtitle {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-lg);
+}
+
+.page-section {
+  padding: var(--space-8) 0;
+}
+
+/* ── Tour grid ───────────────────────────────────────────────────────────── */
+.tour-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--space-6);
+}
+
+/* ── Admin layout ────────────────────────────────────────────────────────── */
+.admin-layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  min-height: 100vh;
+}
+
+.admin-sidebar {
+  background-color: var(--color-brand);
+  color: #fff;
+  padding: var(--space-6) 0;
+}
+
+.admin-sidebar__logo {
+  padding: 0 var(--space-6) var(--space-6);
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: #fff;
+  display: block;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+  margin-bottom: var(--space-4);
+  text-decoration: none;
+}
+
+.admin-sidebar__nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: 0 var(--space-3);
+}
+
+.admin-sidebar__nav a {
+  display: block;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  color: rgba(255,255,255,0.75);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color var(--transition), color var(--transition);
+}
+
+.admin-sidebar__nav a:hover,
+.admin-sidebar__nav a.active {
+  background-color: rgba(255,255,255,0.12);
+  color: #fff;
+  text-decoration: none;
+}
+
+.admin-content {
+  padding: var(--space-8);
+  background-color: var(--color-bg);
+  overflow-y: auto;
+}
+
+.admin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-8);
+}
+
+@media (max-width: 768px) {
+  .admin-layout {
+    grid-template-columns: 1fr;
+  }
+  .admin-sidebar {
+    display: none;
+  }
+}

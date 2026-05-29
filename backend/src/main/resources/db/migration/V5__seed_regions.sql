@@ -1,0 +1,15 @@
+INSERT INTO regions (name, country) VALUES
+    ('Berner Oberland',  'CH'),
+    ('Wallis',           'CH'),
+    ('Graubünden',       'CH'),
+    ('Uri',              'CH'),
+    ('Glarus',           'CH'),
+    ('Appenzell',        'CH'),
+    ('Zentralschweiz',   'CH'),
+    ('Tessin',           'CH'),
+    ('Waadt',            'CH'),
+    ('Freiburg',         'CH'),
+    ('Jura',             'CH'),
+    ('Zürich',           'CH'),
+    ('Vorarlberg',       'AT'),
+    ('Allgäu',           'DE');

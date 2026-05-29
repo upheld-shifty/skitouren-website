@@ -1,0 +1,57 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: skitouren
+      POSTGRES_USER: skitouren
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U skitouren"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      target: prod
+    restart: unless-stopped
+    env_file:
+      # env_file reads values verbatim — no $ interpolation, safe for BCrypt hashes
+      - .env
+    environment:
+      # These override env_file values; safe here as they contain no $ signs
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/skitouren
+      - SPRING_DATASOURCE_USERNAME=skitouren
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
+      - STORAGE_ROOT=/app/storage
+    volumes:
+      - storage_data:/app/storage
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    build:
+      context: ./frontend
+      target: prod
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - storage_data:/storage:ro
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  storage_data:
